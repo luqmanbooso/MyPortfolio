@@ -29,24 +29,52 @@ const Contact = ({ isDarkMode }) => {
       return;
     }
     
-    // Here you would normally send the form data to your backend
-    console.log('Form submitted:', formData);
-    
-    // Simulate successful form submission
-    setFormStatus({ success: true, message: 'Message sent successfully! I\'ll get back to you soon.' });
-    
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      subject: '',
-      message: '',
-    });
-    
-    // Clear success message after 5 seconds
-    setTimeout(() => {
-      setFormStatus(null);
-    }, 5000);
+    try {
+      // Prepare email content
+      const subject = formData.subject || 'New Portfolio Contact Form Message';
+      const body = `
+Name: ${formData.name}
+Email: ${formData.email}
+Subject: ${formData.subject || 'N/A'}
+
+Message:
+${formData.message}
+      `;
+      
+      // Create mailto link
+      const mailtoLink = `mailto:luqmanbooso@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      
+      // Try direct location change instead of window.open
+      window.location.href = mailtoLink;
+      
+      // Show success message with fallback instructions
+      setFormStatus({ 
+        success: true, 
+        message: 'Attempting to open email client. If nothing happens, please manually send an email to luqmanbooso@gmail.com with your message details.' 
+      });
+      
+      // Log form submission for debugging
+      console.log('Form submitted:', formData);
+      
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: '',
+      });
+      
+      // Clear success message after 10 seconds (increased from 5 for user to read instructions)
+      setTimeout(() => {
+        setFormStatus(null);
+      }, 10000);
+    } catch (error) {
+      console.error('Error sending email:', error);
+      setFormStatus({ 
+        success: false, 
+        message: 'Could not open email client. Please manually send an email to luqmanbooso@gmail.com with your message.' 
+      });
+    }
   };
 
   const contactInfo = [
